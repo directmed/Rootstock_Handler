@@ -1,4 +1,4 @@
-from sources.gui_funtions import *
+from sources.gui_functions import *
 
 
 class GuiSetup:
