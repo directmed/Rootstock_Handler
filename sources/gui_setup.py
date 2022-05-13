@@ -6,11 +6,16 @@ class GuiSetup:
 
     xpaths = Xpaths()
 
-    def __init__(self):
+    def __init__(self, handler):
         from sources.variables import location_info_id_options, location_info_no_options_by_id, \
-            current_initial_location_no_option, current_final_location_no_option, root, \
-            user_info_combo_box_options, message_box_width, main_menu_bar, repair_text_input_width, \
+            user_info_combo_box_options, message_box_width, repair_text_input_width, \
             auto_entry_input_width, button_width, background_color, button_color
+
+        self.root = handler.root
+        self.menu_bar = Menu(self.root)
+        self.root.config(menu=self.menu_bar)
+        self.current_initial_location_no_option = StringVar()
+        self.current_final_location_no_option = StringVar()
 
         debugger_print("Initializing GUI setup")
         self.data_info_headers = ['user', 'unit']
@@ -35,7 +40,7 @@ class GuiSetup:
         self.saved_user_data = {}
         """ Page Creation """
         # Create the main frame of the page
-        self.main_frame = Frame(root)
+        self.main_frame = Frame(self.root)
         self.main_frame.config(bg=background_color)
         self.main_frame.pack(fill=BOTH, expand=1)
 
@@ -249,13 +254,13 @@ class GuiSetup:
             self.location_info_initial_no_combo_boxes[option].bind('<Return>', partial(self.autocorrect_no,
                                                                                        self.location_info_initial_no_combo_boxes[
                                                                                            option],
-                                                                                       current_initial_location_no_option,
+                                                                                       self.current_initial_location_no_option,
                                                                                        location_info_no_options_by_id[
                                                                                            option]))
             self.location_info_initial_no_combo_boxes[option].bind('<FocusOut>', partial(self.autocorrect_no,
                                                                                          self.location_info_initial_no_combo_boxes[
                                                                                              option],
-                                                                                         current_initial_location_no_option,
+                                                                                         self.current_initial_location_no_option,
                                                                                          location_info_no_options_by_id[
                                                                                              option]))
 
@@ -271,13 +276,13 @@ class GuiSetup:
                                                                                     self.location_info_initial_id_combo_box[
                                                                                         'Initial'],
                                                                                     self.location_info_initial_no_combo_boxes,
-                                                                                    current_initial_location_no_option,
+                                                                                    self.current_initial_location_no_option,
                                                                                     location_info_id_options, 2))
         self.location_info_initial_id_combo_box['Initial'].bind('<FocusOut>', partial(self.autocorrect_id,
                                                                                       self.location_info_initial_id_combo_box[
                                                                                           'Initial'],
                                                                                       self.location_info_initial_no_combo_boxes,
-                                                                                      current_initial_location_no_option,
+                                                                                      self.current_initial_location_no_option,
                                                                                       location_info_id_options, 2))
 
         self.all_input_values.update(self.location_info_initial_id_combo_box)
@@ -294,13 +299,13 @@ class GuiSetup:
                                                                  partial(self.autocorrect_no,
                                                                          self.location_info_final_no_combo_boxes[
                                                                              option],
-                                                                         current_final_location_no_option,
+                                                                         self.current_final_location_no_option,
                                                                          location_info_no_options_by_id[option]))
             self.location_info_final_no_combo_boxes[option].bind('<FocusOut>',
                                                                  partial(self.autocorrect_no,
                                                                          self.location_info_final_no_combo_boxes[
                                                                              option],
-                                                                         current_final_location_no_option,
+                                                                         self.current_final_location_no_option,
                                                                          location_info_no_options_by_id[option]))
 
         self.all_input_values.update(self.location_info_final_no_combo_boxes)
@@ -314,19 +319,19 @@ class GuiSetup:
                                                             partial(self.autocorrect_id,
                                                                     self.location_info_final_id_combo_box['Final'],
                                                                     self.location_info_final_no_combo_boxes,
-                                                                    current_final_location_no_option,
+                                                                    self.current_final_location_no_option,
                                                                     location_info_id_options, 3, ))
         self.location_info_final_id_combo_box['Final'].bind('<FocusOut>',
                                                             partial(self.autocorrect_id,
                                                                     self.location_info_final_id_combo_box['Final'],
                                                                     self.location_info_final_no_combo_boxes,
-                                                                    current_final_location_no_option,
+                                                                    self.current_final_location_no_option,
                                                                     location_info_id_options, 3))
 
         self.location_info_initial_id_combo_box['Initial'].current(0)
-        current_initial_location_no_option.set('--None--')
+        self.set_current_initial_location_no_option('--None--')
         self.location_info_final_id_combo_box['Final'].current(0)
-        current_final_location_no_option.set('--None--')
+        self.set_current_final_location_no_option('--None--')
 
         self.perform_tasks_check_boxes['Location Transfer'].config(
             command=partial(self.location_transfer_input,
@@ -335,7 +340,7 @@ class GuiSetup:
                             self.location_info_initial_id_combo_box['Initial'],
                             self.location_info_labels['Transfer Location No.'],
                             self.location_info_initial_no_combo_boxes,
-                            current_initial_location_no_option,
+                            self.current_initial_location_no_option,
                             2))
         self.perform_tasks_check_boxes['WO Receipt'].config(
             command=partial(self.location_transfer_input,
@@ -344,7 +349,7 @@ class GuiSetup:
                             self.location_info_final_id_combo_box['Final'],
                             self.location_info_labels['WO Receipt Location No.'],
                             self.location_info_final_no_combo_boxes,
-                            current_final_location_no_option,
+                            self.current_final_location_no_option,
                             3))
 
         self.all_input_values.update(self.location_info_final_id_combo_box)
@@ -433,23 +438,22 @@ class GuiSetup:
         """ Update Menu Options """
 
         # File menu
-        self.file_menu = Menu(main_menu_bar, tearoff=0)
-        main_menu_bar.add_cascade(label='File', menu=self.file_menu)
+        self.file_menu = Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label='File', menu=self.file_menu)
         self.file_menu.add_command(label='Load Info', command=self.get_user_data)
         self.file_menu.add_command(label='Save Info', command=self.save_user_data)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label='Exit', command=root.quit)
+        self.file_menu.add_command(label='Exit', command=self.root.quit)
         # Edit menu
-        self.edit_menu = Menu(main_menu_bar, tearoff=0)
-        main_menu_bar.add_cascade(label='Update', menu=self.edit_menu)
+        self.edit_menu = Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label='Update', menu=self.edit_menu)
         # self.edit_menu.add_command(label='Options', command=self.is_checked)
         # self.edit_menu.add_command(label='Xpath', command=self.is_checked)
         self.edit_menu.add_command(label='Xpaths', command=self.xpaths.load_xpaths_github)
         self.edit_menu.add_command(label='Locations', command=self.load_locations_github)
 
     def start_gui(self):
-        from sources.variables import max_col, all_col_width, current_initial_location_no_option, \
-            current_final_location_no_option, background_color, button_color
+        from sources.variables import max_col, all_col_width, background_color, button_color
 
         """ Placing elements on grid """
         # grid will have 8 columns
@@ -537,14 +541,14 @@ class GuiSetup:
                                                                                   sticky=E, pady=5)
             col_start = col_start + 3
 
-        current_initial_location_no_option.set('--None--')
-        current_final_location_no_option.set('--None--')
+        self.set_current_initial_location_no_option('--None--')
+        self.set_current_final_location_no_option('--None--')
         col_start = 1
         row_start = 2
         self.location_info_initial_id_combo_box['Initial'].grid(row=row_start, column=col_start, sticky=W, pady=5,
                                                                 columnspan=2)
         col_start = col_start + 3
-        self.location_info_initial_no_combo_boxes[current_initial_location_no_option.get()].grid(row=row_start,
+        self.location_info_initial_no_combo_boxes[self.get_current_initial_location_no_option()].grid(row=row_start,
                                                                                                  column=col_start,
                                                                                                  sticky=W, pady=5,
                                                                                                  columnspan=2)
@@ -553,7 +557,7 @@ class GuiSetup:
         self.location_info_final_id_combo_box['Final'].grid(row=row_start, column=col_start, sticky=W, pady=5,
                                                             columnspan=2)
         col_start = col_start + 3
-        self.location_info_final_no_combo_boxes[current_final_location_no_option.get()].grid(row=row_start,
+        self.location_info_final_no_combo_boxes[self.get_current_final_location_no_option()].grid(row=row_start,
                                                                                              column=col_start,
                                                                                              sticky=W, pady=5,
                                                                                              columnspan=2)
@@ -620,14 +624,13 @@ class GuiSetup:
         self.main_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def window_size_update(self, event):  # change this self
-        from sources.variables import root
         debugger_print('updating window.')
-        window_width = root.winfo_width()
-        window_height = root.winfo_height()
+        window_width = self.root.winfo_width()
+        window_height = self.root.winfo_height()
         if (window_width != event.width) or (window_height != event.heigth):
-            root.update()
-            self.grid(row=0, column=1, sticky=W, columnspan=8, padx=int(0.05 * root.winfo_width()),
-                      pady=int(0.05 * root.winfo_height()))
+            self.root.update()
+            self.grid(row=0, column=1, sticky=W, columnspan=8, padx=int(0.05 * self.root.winfo_width()),
+                      pady=int(0.05 * self.root.winfo_height()))
 
     def is_checked(self, var):
         debugger_print(var.get())
@@ -701,16 +704,16 @@ class GuiSetup:
             wid4[current_loc.get()].grid_remove()
 
     def hide_frame_input(self, var, input_frame, row_ind):
-        from sources.variables import max_col, root
+        from sources.variables import max_col
         if var.get() is True:
             input_frame.grid(row=row_ind, column=1, columnspan=max_col, sticky=W, pady=5)
         else:
             input_frame.grid_remove()
 
-        root.update()
+        self.root.update()
 
     def add_std_op(self):
-        from sources.variables import op_combo_box_options, op_labels, op_widgets, op_vars, op_label_names, root, \
+        from sources.variables import op_combo_box_options, op_labels, op_widgets, op_vars, op_label_names, \
             operations_width, background_color
 
         # Operations Info Frame
@@ -752,10 +755,10 @@ class GuiSetup:
                     op_labels[op_index][op_name].grid(row=(op_index + 1), column=4, sticky=E, pady=5)
                     op_widgets[op_index][op_name].grid(row=(op_index + 1), column=5, sticky=W, pady=5)
 
-        root.update()
+        self.root.update()
 
     def delete_std_op(self):
-        from sources.variables import op_labels, op_widgets, op_vars, op_label_names, root
+        from sources.variables import op_labels, op_widgets, op_vars, op_label_names
         op_index = len(op_labels) - 1
         if op_index >= 0:
             for op_name in op_label_names:
@@ -766,7 +769,7 @@ class GuiSetup:
             op_widgets.pop(op_index)
             op_vars.pop(op_index)
 
-        root.update()
+        self.root.update()
 
     def get_location_ids(self):
         from sources.variables import location_info_id_options, location_info_no_options_by_id
@@ -940,7 +943,6 @@ class GuiSetup:
             self.save_user_data()  # save all the data.
 
     def update_loaded_data(self):
-        from sources.variables import root
         # data_info_headers = ['user', 'unit']  # add 'options'
         user_info_headers = [self.user_info_entry_box_names, self.unit_info_entry_box_names]
         user_info_header_values = [self.user_info_entry_box_text_vars, self.unit_info_entry_box_text_vars]
@@ -956,7 +958,7 @@ class GuiSetup:
                 else:
                     continue
 
-        root.update()
+        self.root.update()
 
     def get_user_info_entry_box_text_vars(self, name):
         return self.user_info_entry_box_text_vars[name].get().__str__()
@@ -990,3 +992,15 @@ class GuiSetup:
 
     def get_perform_tasks_check_box_values(self, name):
         return self.perform_tasks_check_box_values[name].get()
+
+    def get_current_initial_location_no_option(self):
+        return self.current_initial_location_no_option.get()
+
+    def set_current_initial_location_no_option(self, str):
+        return self.current_initial_location_no_option.set(str)
+
+    def get_current_final_location_no_option(self):
+        return self.current_final_location_no_option.get()
+
+    def set_current_final_location_no_option(self, str):
+        return self.current_final_location_no_option.set(str)

@@ -19,7 +19,7 @@ def get_item_info(driver, xpaths, gui):
         u_info_str = u_info.__str__()
         elem.send_keys(u_info_str)
         elem.send_keys(Keys.ENTER)
-        debugger_print('Searching for the serianl number...')
+        debugger_print('Searching for the serial number...')
     except NoSuchElementException:
         debugger_print('Error: Search box not found.')
         # update_status_box('Error:   Search box not found.')
@@ -45,20 +45,31 @@ def get_item_info(driver, xpaths, gui):
                 headers = list_ele.find_element_by_class_name("pbHeader")
                 header_text = headers.text
                 # debugger_print(headers)
-                # debugger_print(header_text)
+                debugger_print(header_text)
 
                 if header_text is not None and header_wanted in header_text:
+                    debugger_print("Header Found: Inventory Items by Serial Number")
                     data_body = list_ele.find_element_by_class_name("pbBody")
-                    data_section = data_body.find_elements_by_tag_name("tr")
-                    datacells = data_section[1].find_elements_by_class_name("dataCell  ")
-                    debugger_print('\n*** Datacells ***\n')
+                    data_sections = data_body.find_elements_by_tag_name("tr")
+                    debugger_print(data_sections)
+                    debugger_print("sorting through unit rows")
 
-                    for cell, datacell in enumerate(datacells):
-                        if cell < len(item_info):
-                            item_info[cell] = datacell.text
-                            debugger_print("datacell[" + cell.__str__() + "] = " + item_info[cell].__str__())
-                        else:
-                            break
+                    for sec_index, section in enumerate(data_sections):
+                        debugger_print("\n")
+                        debugger_print(section.text)
+                        if sec_index != 0:
+                            data_cells = section.find_elements_by_class_name("dataCell  ")
+                            debugger_print(data_cells)
+                            cell_text = data_cells[0].text
+                            cell_str = cell_text.__str__()
+                            if gui.get_unit_info_entry_box_text_vars('Part Number') in cell_str and \
+                                    gui.get_unit_info_entry_box_text_vars('Serial Number') in cell_str:
+                                for cell, data_cells in enumerate(data_cells):
+                                    if cell < len(item_info):
+                                        item_info[cell] = data_cells.text
+                                        debugger_print("data_cell[" + cell.__str__() + "] = " + item_info[cell].__str__())
+                                    else:
+                                        break
 
                     exit_flag = 1
                     break

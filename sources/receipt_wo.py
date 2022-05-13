@@ -2,7 +2,7 @@ from sources.debugger_print import *
 
 
 def wo_receipt(driver, xpaths, gui):
-    from sources.variables import current_final_location_no_option, wo_data, increase_index, wait_till_absence
+    from sources.variables import wo_data, increase_index, wait_till_absence
 
     xpath_section = 'wo_receipt'
     section_index = -1
@@ -34,7 +34,7 @@ def wo_receipt(driver, xpaths, gui):
 
         #
         debug_message = "Enter INVENTORY LOCATION NUMBER"
-        text_to_input = gui.get_location_info_final_no_combo_boxes(current_final_location_no_option.get().__str__())
+        text_to_input = gui.get_location_info_final_no_combo_boxes(gui.get_current_final_location_no_option().__str__())
         section_index = increase_index(section_index, xpaths.items_len(xpath_section))
         elem_xpath = xpaths.get_xpath(xpath_section, section_index)
         input_text(driver, elem_xpath, text_to_input, debug_message)

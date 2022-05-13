@@ -4,6 +4,8 @@ debug = True
 test_flag = False
 background_color = '#fafcfc'
 button_color = '#42a2fc'
+
+'''
 root = Tk()
 root.iconbitmap('DM_icon.ico')
 root.title('Rootstock Work Order Handler')
@@ -11,6 +13,7 @@ root.config(bg=background_color)
 root.geometry("1200x600")
 main_menu_bar = Menu(root)
 root.config(menu=main_menu_bar)
+'''
 
 all_col_width = 75
 max_col = 6
@@ -46,8 +49,6 @@ user_info_combo_box_options = {'Name': user_info_engineer_names}
 location_info_id_options = []
 # location info no options by id will be the location number options assigned to a particular ID
 location_info_no_options_by_id = {}
-current_initial_location_no_option = StringVar()
-current_final_location_no_option = StringVar()
 
 op_combo_box_options = ["10 (Initial Test / Inspection)", "20 (Diagnose / Troubleshoot)",
                         "30 (Repair)",

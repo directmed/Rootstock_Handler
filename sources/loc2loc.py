@@ -2,7 +2,7 @@ from sources.debugger_print import *
 
 
 def loc_to_loc_transfer(driver, xpaths, gui):
-    from sources.variables import current_initial_location_no_option, original_location, increase_index, wait_till_absence
+    from sources.variables import original_location, increase_index, wait_till_absence
 
     xpath_section = 'loc_to_loc_transfer'
     section_index = -1
@@ -183,7 +183,7 @@ def loc_to_loc_transfer(driver, xpaths, gui):
                 break
 
         loc_no = data_cells[2].find_element_by_tag_name("input")
-        loc_no.send_keys(gui.get_location_info_initial_no_combo_boxes(current_initial_location_no_option.get().__str__()))
+        loc_no.send_keys(gui.get_location_info_initial_no_combo_boxes(gui.get_current_initial_location_no_option().__str__()))
 
         # Click the MOVE SELECTED ITEMS BUTTON
         section_index = increase_index(section_index, xpaths.items_len(xpath_section))

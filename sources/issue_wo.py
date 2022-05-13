@@ -97,7 +97,7 @@ def wo_issue(driver, xpaths, gui):
         debug_message = "selecting the serial number"
         temp = gui.get_unit_info_entry_box_text_vars('Serial Number')
         temp = temp.__str__()
-        select_option_el(data_cells[5], temp, debug_message)
+        select_option_el(data_cells[6], temp, debug_message)
 
         section_index = increase_index(section_index, xpaths.items_len(xpath_section))
         elem_xpath = xpaths.get_xpath(xpath_section, section_index)
@@ -109,11 +109,11 @@ def wo_issue(driver, xpaths, gui):
             debug_message = "Click the ISSUE COMPONENTS BUTTON"
             click_element(driver, elem_xpath, debug_message)
 
-            # Wait for the page to return to normal. You may need to click the OK button
-            try:
-                wait = WebDriverWait(driver, wait_till_absence, ignored_exceptions=UnexpectedAlertPresentException).until_not(EC.presence_of_element_located((By.XPATH, elem_xpath1)))
-            except TimeoutException:
-                pass
+        # Wait for the page to return to normal. You may need to click the OK button
+        try:
+            wait = WebDriverWait(driver, wait_till_absence, ignored_exceptions=UnexpectedAlertPresentException).until_not(EC.presence_of_element_located((By.XPATH, elem_xpath1)))
+        except TimeoutException:
+            pass
 
         # Return to original Tab
         driver.close()
