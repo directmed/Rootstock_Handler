@@ -1,7 +1,7 @@
 from sources.all_imports import *
 
 debug = False
-test_flag = True
+test_flag = False
 background_color = '#fafcfc'
 button_color = '#42a2fc'
 
