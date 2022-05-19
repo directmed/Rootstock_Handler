@@ -28,3 +28,7 @@ def close_wo(driver, xpaths):
 
     debugger_print("\n******** WO is now closed ********\n")
     return
+
+
+if __name__ == "__main__":
+    print("Hello world!")

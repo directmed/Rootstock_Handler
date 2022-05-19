@@ -7,6 +7,7 @@ class GuiSetup:
     xpaths = Xpaths()
 
     def __init__(self, handler):
+        from sources.debugger_print import debugger_print_gui_setup
         from sources.variables import location_info_id_options, location_info_no_options_by_id, \
             user_info_combo_box_options, message_box_width, repair_text_input_width, \
             auto_entry_input_width, button_width, background_color, button_color
@@ -17,7 +18,7 @@ class GuiSetup:
         self.current_initial_location_no_option = StringVar()
         self.current_final_location_no_option = StringVar()
 
-        debugger_print("Initializing GUI setup")
+        debugger_print_gui_setup("Initializing GUI setup")
         self.data_info_headers = ['user', 'unit']
         self.edit_menu_option_names = ['size', 'font']
         self.edit_menu_options = {}
@@ -624,7 +625,8 @@ class GuiSetup:
         self.main_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def window_size_update(self, event):  # change this self
-        debugger_print('updating window.')
+        from sources.debugger_print import debugger_print_gui_setup
+        debugger_print_gui_setup('updating window.')
         window_width = self.root.winfo_width()
         window_height = self.root.winfo_height()
         if (window_width != event.width) or (window_height != event.heigth):
@@ -633,16 +635,18 @@ class GuiSetup:
                       pady=int(0.05 * self.root.winfo_height()))
 
     def is_checked(self, var):
-        debugger_print(var.get())
+        from sources.debugger_print import debugger_print_gui_setup
+        debugger_print_gui_setup(var.get())
         if var.get() is True:
-            debugger_print("check box is checked")
+            debugger_print_gui_setup("check box is checked")
         else:
-            debugger_print("check box is not checked.")
+            debugger_print_gui_setup("check box is not checked.")
 
     def autocorrect_id(self, ele, sel_box, cur_sel, sel_options, row, event):  # change this self
-        # debugger_print("selection identifier: ")
-        # debugger_print(cur_sel)
-        # debugger_print(self.get())
+        from sources.debugger_print import debugger_print_gui_setup
+        # debugger_print_gui_setup("selection identifier: ")
+        # debugger_print_gui_setup(cur_sel)
+        # debugger_print_gui_setup(self.get())
         match_flag = False
         new_sel = ' '
         for sel in sel_options:
@@ -653,19 +657,20 @@ class GuiSetup:
 
         if match_flag is False:
             ele.set(ele.current(0))
-            # debugger_print("no match found")
+            # debugger_print_gui_setup("no match found")
         else:
             ele.autocomplete()
             if cur_sel.get() != new_sel:
                 sel_box[cur_sel.get()].grid_remove()
                 sel_box[new_sel].grid(row=row, column=4, sticky=W, pady=5, columnspan=2)
                 cur_sel.set(new_sel)
-                # debugger_print("NEW selection identifier: " + cur_sel.get())
+                # debugger_print_gui_setup("NEW selection identifier: " + cur_sel.get())
 
-            debugger_print("found a match")
+            debugger_print_gui_setup("found a match")
 
     def autocorrect_no(self, ele, cur_sel, sel_options, event):  # change this self
-        debugger_print("selection identifier: " + cur_sel.get())
+        from sources.debugger_print import debugger_print_gui_setup
+        debugger_print_gui_setup("selection identifier: " + cur_sel.get())
         # print(self.get())
         match_flag = False
         new_sel = ' '
@@ -677,11 +682,11 @@ class GuiSetup:
 
         if match_flag is False:
             ele.set(ele.current(0))
-            debugger_print("no match found")
+            debugger_print_gui_setup("no match found")
         else:
             ele.autocomplete()
-            debugger_print("NEW selection identifier: " + cur_sel.get())
-            debugger_print("found a match")
+            debugger_print_gui_setup("NEW selection identifier: " + cur_sel.get())
+            debugger_print_gui_setup("found a match")
 
     def previous_wo_input(self, var, wid1, wid2, row_ind):
         if var.get() is True:
@@ -773,18 +778,19 @@ class GuiSetup:
 
     def get_location_ids(self):
         from sources.variables import location_info_id_options, location_info_no_options_by_id
+        from sources.debugger_print import debugger_print_gui_setup
         data_flag = False  # true if CSV file is found
         try:
             location_data = pd.read_csv('locations.csv')  # read csv file
             if location_data.empty:  # check if csv file is empty
-                debugger_print('CSV file is empty.')  # print out message on status box
+                debugger_print_gui_setup('CSV file is empty.')  # print out message on status box
                 data_flag = False  # set flag false
             else:
                 data_flag = True  # set flag true b/c csv file is not empty
 
         except FileNotFoundError:  # handle if file is not found in ROG folder.
             self.load_locations_github()  # search on github for default data.
-            debugger_print("Get data from Github")
+            debugger_print_gui_setup("Get data from Github")
 
         if data_flag is True:  # csv file is found in ROG folder
             # obtain all of the location number headers
@@ -820,12 +826,13 @@ class GuiSetup:
     def load_locations_github(self):
         import os
         from sources.variables import location_info_id_options, location_info_no_options_by_id
+        from sources.debugger_print import debugger_print_gui_setup
         data_flag = False  # true if csv file is found in github
 
         if os.path.exists('locations.csv'):
             os.remove('locations.csv')
         else:
-            debugger_print("The file does not exist")
+            debugger_print_gui_setup("The file does not exist")
 
         location_info_id_options.clear()
         location_info_no_options_by_id.clear()
@@ -874,13 +881,13 @@ class GuiSetup:
         locations_header.append('Location ID')
         for loc_index in range(0, len(location_info_id_options)):
             locations_header.append(location_info_id_options[loc_index])
-        debugger_print("headers = " + locations_header.__str__())
+        debugger_print_gui_setup("headers = " + locations_header.__str__())
 
         locations_data = [[]]
         locations_data[0] = location_info_id_options.copy()
         for key_index, key in enumerate(location_info_no_options_by_id):
             locations_data.append([])
-            debugger_print("locations data index = " + (key_index + 1).__str__())
+            debugger_print_gui_setup("locations data index = " + (key_index + 1).__str__())
             for data in location_info_no_options_by_id[key]:
                 locations_data[key_index + 1].append(data)
 
@@ -889,6 +896,7 @@ class GuiSetup:
 
     # Function saves all user data to csv file in ROG folder.
     def save_user_data(self):
+        from sources.debugger_print import debugger_print_gui_setup
         # user_name, user_password, engineer_name, directory
         data_info_headers = ['user', 'unit']  # add 'options'
         user_info_headers = [self.user_info_entry_box_names, self.unit_info_entry_box_names]
@@ -897,10 +905,10 @@ class GuiSetup:
         headers = []
         for header_index, header in enumerate(data_info_headers):
             headers.append(header.__str__())
-            debugger_print("saving info: header = " + header)
+            debugger_print_gui_setup("saving info: header = " + header)
             for entry in user_info_headers[header_index]:
-                debugger_print("entry = " + entry)
-                debugger_print(
+                debugger_print_gui_setup("entry = " + entry)
+                debugger_print_gui_setup(
                     "info_str[" + header + "] = " + user_info_header_values[header_index][entry].get().__str__())
                 info_str[header_index].append("\'" + user_info_header_values[header_index][entry].get().__str__())
 
@@ -908,6 +916,7 @@ class GuiSetup:
         df.to_csv('user_data.csv', index=False)  # save CSV file
 
     def get_user_data(self):
+        from sources.debugger_print import debugger_print_gui_setup
         data_flag = False  # true if CSV file is found
 
         try:
@@ -919,7 +928,7 @@ class GuiSetup:
                 data_flag = True  # set flag true b/c csv file is not empty
 
         except FileNotFoundError:  # handle if file is not found in ROG folder.
-            debugger_print("No user data available.")
+            debugger_print_gui_setup("No user data available.")
             return
 
         if data_flag is True:  # csv file is found in ROG folder
@@ -933,9 +942,9 @@ class GuiSetup:
                         data = data.__str__().replace("\'", "")
                         self.saved_user_data[self.data_info_headers[info_index]].append(
                             data.__str__())  # place xpath info into xpath_options
-                        debugger_print("data = " + data.__str__())
-                        debugger_print(self.saved_user_data)
-                        debugger_print("getting user info from file")
+                        debugger_print_gui_setup("data = " + data.__str__())
+                        debugger_print_gui_setup(self.saved_user_data)
+                        debugger_print_gui_setup("getting user info from file")
                     else:
                         continue
             # show data
@@ -943,16 +952,17 @@ class GuiSetup:
             self.save_user_data()  # save all the data.
 
     def update_loaded_data(self):
+        from sources.debugger_print import debugger_print_gui_setup
         # data_info_headers = ['user', 'unit']  # add 'options'
         user_info_headers = [self.user_info_entry_box_names, self.unit_info_entry_box_names]
         user_info_header_values = [self.user_info_entry_box_text_vars, self.unit_info_entry_box_text_vars]
 
         for header_index, header in enumerate(self.saved_user_data):
-            debugger_print("updating info: header = " + header)
+            debugger_print_gui_setup("updating info: header = " + header)
             for entry_index, entry in enumerate(user_info_headers[header_index]):
-                debugger_print("updating entry = " + entry)
+                debugger_print_gui_setup("updating entry = " + entry)
                 if entry_index <= (len(self.saved_user_data[header]) - 1):
-                    debugger_print(self.saved_user_data[header][entry_index])
+                    debugger_print_gui_setup(self.saved_user_data[header][entry_index])
                     user_info_header_values[header_index][entry].set(
                         self.saved_user_data[header][entry_index].__str__())
                 else:
@@ -1004,3 +1014,7 @@ class GuiSetup:
 
     def set_current_final_location_no_option(self, str):
         return self.current_final_location_no_option.set(str)
+
+
+if __name__ == "__main__":
+    print("Hello world!")

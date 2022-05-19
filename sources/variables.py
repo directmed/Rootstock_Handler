@@ -1,7 +1,7 @@
 from sources.all_imports import *
 
-debug = True
-test_flag = False
+debug = False
+test_flag = True
 background_color = '#fafcfc'
 button_color = '#42a2fc'
 
@@ -115,7 +115,6 @@ class Xpaths:
 
     def load_xpaths_github(self):
         from sources.debugger_print import debugger_print
-        import pandas as pds
         data_flag = False  # true if csv file is found in github
 
         xpath_headers = ['login_init', 'get_item_info', 'get_wo_page', 'check_wo_page_status', 'open_wo_page',
@@ -175,3 +174,7 @@ class Xpaths:
         for key, values in self.xpath_sections.items():
             for value_index, value in enumerate(values):
                 debugger_print(key + '[' + value_index.__str__() + '] = ' + value)
+
+
+if __name__ == "__main__":
+    print("Hello world!")

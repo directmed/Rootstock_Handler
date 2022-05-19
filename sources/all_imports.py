@@ -30,5 +30,11 @@ import numpy as np
 from datetime import date
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
+import sys
 import os
 import subprocess
+import logging
+import traceback
+
+if __name__ == "__main__":
+    print("Hello world!")

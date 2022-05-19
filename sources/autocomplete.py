@@ -98,3 +98,5 @@ def autocomplete_example(ws):
     selection_combo_boxes[current_selection.get()].pack()
 
 
+if __name__ == "__main__":
+    print("Hello world!")

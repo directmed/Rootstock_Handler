@@ -4,7 +4,7 @@ from sources.debugger_print import *
 def set_previous_location():
     from sources.variables import item_info, location_info_id_options, item_info_location
 
-    debugger_print("******** Checking for previous WOs ********")
+    debugger_print("******** set_previous_location: Checking for previous WOs ********")
 
     location_key = [""]
     index_loc = 0
@@ -25,6 +25,8 @@ def set_previous_location():
             return location_key[loc_index], location
 
         loc_index = loc_index + 1
+
+    debugger_print("******** set_previous_location: Finalized ********")
     return
 
 
@@ -33,3 +35,7 @@ def set_inventory_location():
     temp = item_info[item_info_location['no']][0:4]
     total_str = original_location['id'].__str__() + ' / ' + temp
     return str(total_str)
+
+
+if __name__ == "__main__":
+    print("Hello world!")
