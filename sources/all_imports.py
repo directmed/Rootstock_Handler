@@ -16,25 +16,24 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
-from time import sleep
-import re
 
 # include for automatic chrome browser updates
 import chromedriver_autoinstaller
 
 # install for reading csv files
 import pandas as pd
-import numpy as np
 
-# install for creating Word documents
+# install for writing reports
 from datetime import date
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
+
 import sys
 import os
 import subprocess
 import logging
 import traceback
+
 
 if __name__ == "__main__":
     print("Hello world!")

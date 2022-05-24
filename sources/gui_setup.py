@@ -778,10 +778,11 @@ class GuiSetup:
 
     def get_location_ids(self):
         from sources.variables import location_info_id_options, location_info_no_options_by_id
-        from sources.debugger_print import debugger_print_gui_setup
+        from sources.debugger_print import debugger_print_gui_setup, get_dir
         data_flag = False  # true if CSV file is found
         try:
-            location_data = pd.read_csv('locations.csv')  # read csv file
+            this_dir = get_dir()
+            location_data = pd.read_csv(this_dir + '\\locations.csv')  # read csv file
             if location_data.empty:  # check if csv file is empty
                 debugger_print_gui_setup('CSV file is empty.')  # print out message on status box
                 data_flag = False  # set flag false
@@ -896,7 +897,8 @@ class GuiSetup:
 
     # Function saves all user data to csv file in ROG folder.
     def save_user_data(self):
-        from sources.debugger_print import debugger_print_gui_setup
+        from sources.debugger_print import debugger_print_gui_setup, get_dir
+        this_dir = get_dir()
         # user_name, user_password, engineer_name, directory
         data_info_headers = ['user', 'unit']  # add 'options'
         user_info_headers = [self.user_info_entry_box_names, self.unit_info_entry_box_names]
@@ -913,14 +915,15 @@ class GuiSetup:
                 info_str[header_index].append("\'" + user_info_header_values[header_index][entry].get().__str__())
 
         df = pd.DataFrame(info_str, index=headers).transpose()
-        df.to_csv('user_data.csv', index=False)  # save CSV file
+        df.to_csv(this_dir + '\\user_data.csv', index=False)  # save CSV file
 
     def get_user_data(self):
-        from sources.debugger_print import debugger_print_gui_setup
+        from sources.debugger_print import debugger_print_gui_setup, get_dir
         data_flag = False  # true if CSV file is found
 
         try:
-            user_data = pd.read_csv('user_data.csv')  # read csv file
+            this_dir = get_dir()
+            user_data = pd.read_csv(this_dir + '\\user_data.csv')  # read csv file
             if user_data.empty:  # check if csv file is empty
                 # update_status_box('CSV file is empty.')  # print out message on status box
                 data_flag = False  # set flag false
@@ -1014,6 +1017,61 @@ class GuiSetup:
 
     def set_current_final_location_no_option(self, str):
         return self.current_final_location_no_option.set(str)
+
+    def get_gui_entries(self):
+        from sources.debugger_print import debugger_print
+
+        debugger_print("********** User has entered the following information **********")
+        debugger_print("\n**** PERFORM TASKS ****")
+        for name in self.perform_tasks_check_box_names:
+            debugger_print(name.__str__() + ' = ' + self.perform_tasks_check_box_values[name].get().__str__())
+
+        debugger_print("\n**** USER INFORMATION ****")
+        for name in self.user_info_entry_box_names:
+            debugger_print(name + " = " + self.user_info_entry_boxes[name].get().__str__())
+
+        for name in self.user_info_combo_box_names:
+            debugger_print(name + " = " + self.user_info_combo_boxes[name].get().__str__())
+
+        debugger_print("\n**** UNIT INFORMATION ****")
+        for name in self.unit_info_entry_box_names:
+            debugger_print(name + " = " + self.unit_info_entry_box_text_vars[name].get())
+
+        for name in self.unit_info_check_box_names:
+            debugger_print(name + " = " + self.unit_info_check_box_vars[name].get().__str__())
+
+        debugger_print("\n**** LOCATION INFORMATION ****")
+        name_index = 0
+        debugger_print(self.location_info_label_names[name_index].__str__() + " = " + self.get_location_info_initial_id_combo_box('Initial'))
+        name_index = name_index + 1
+        debugger_print(self.location_info_label_names[name_index].__str__() + " = " + self.get_current_initial_location_no_option())
+        name_index = name_index + 1
+        debugger_print(self.location_info_label_names[name_index].__str__() + " = " + self.get_location_info_final_id_combo_box('Final'))
+        name_index = name_index + 1
+        debugger_print(self.location_info_label_names[name_index].__str__() + " = " + self.get_current_final_location_no_option())
+
+        debugger_print("\n**** REPAIR INFORMATION ****")
+        pull_repair_info_var_values_names = ['OEM Number',
+                                              'Initial Condition',
+                                              'Customer Complaint',
+                                              'Initial Failure',
+                                              'Internal Repair',
+                                              'External Repair',
+                                              'Tested On Bench',
+                                              'Tested On Live MRI',
+                                              'Testing Notes',
+                                              'Repair Is Finalized',
+                                              'Append']
+        for name in pull_repair_info_var_values_names:
+            try:  # see if var is a check box
+                if self.pull_repair_info_var_values(name).get() is True or self.pull_repair_info_var_values(name).get() is False:
+                    debugger_print(name + " = " + self.pull_repair_info_var_values(name).get().__str__())
+
+            except TypeError:
+                send_text_str = self.pull_repair_info_var_values(name).get("1.0", END).__str__()
+                debugger_print(name + " = " + send_text_str)
+
+        # add method for operatios information
 
 
 if __name__ == "__main__":

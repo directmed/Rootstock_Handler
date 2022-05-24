@@ -66,6 +66,8 @@ def run_wo_maker(main_gui):
             error_log_unit_name = "\\unit.txt"
             error_log_unit = error_log_dir + error_log_unit_name
 
+            main_gui.get_gui_entries()
+
             item = main_gui.get_unit_info_entry_box_text_vars('Part Number')
             serial = main_gui.get_unit_info_entry_box_text_vars('Serial Number')
             unit_str = item + '_' + serial

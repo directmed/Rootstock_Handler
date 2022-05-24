@@ -8,7 +8,10 @@ class Handler:
         debugger_print_gui_setup("initialized Handler")
 
     def start_tk(self):
-        self.root.iconbitmap('DM_icon.ico')
+        from sources.debugger_print import get_dir
+
+        this_dir = get_dir()
+        self.root.iconbitmap(this_dir + '\\DM_icon.ico')
         self.root.title('Rootstock Work Order Handler')
         self.root.geometry("1200x600")
 

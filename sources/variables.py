@@ -28,7 +28,7 @@ operations_width = 12
 
 # options
 message_box_width = max_col * 21
-wait_time = 20
+wait_time = 60
 wait_till_absence = 60
 
 '''
@@ -79,7 +79,7 @@ class Xpaths:
         debugger_print("Initializing Xpaths")
 
     def get_xpaths(self):
-        from sources.debugger_print import debugger_print
+        from sources.debugger_print import debugger_print, get_dir
         import pandas as pds
 
         xpath_headers = ['login_init', 'get_item_info', 'get_wo_page', 'check_wo_page_status', 'open_wo_page',
@@ -87,7 +87,8 @@ class Xpaths:
                          'add_std_operation', 'tq_booking', 'wo_receipt', 'close_wo', 'tq_rows']
         data_flag = False  # true if CSV file is found
         try:
-            xpath_data = pds.read_csv('xpaths.csv')  # read csv file
+            this_dir = get_dir()
+            xpath_data = pds.read_csv(this_dir + '\\xpaths.csv')  # read csv file
             if xpath_data.empty:  # check if csv file is empty
                 debugger_print('CSV file is empty.')  # print out message on status box
                 data_flag = False  # set flag false

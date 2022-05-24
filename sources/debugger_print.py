@@ -75,9 +75,11 @@ def setup_files():
     error_log_dir_name = "\\errorlog"
     error_log_track_name = "\\track.txt"
     cw = os.getcwd()
+    cw_temp = cw.__str__()
+    cw_str = cw_temp.replace("\\dist\\wo_handler", "")
 
     # create strings for both paths.
-    error_log_dir = cw.__str__() + error_log_dir_name
+    error_log_dir = cw_str + error_log_dir_name
     error_log_track = error_log_dir + error_log_track_name
 
     # Check whether the specified path exists or not
@@ -111,15 +113,25 @@ def get_files_dir():
     error_log_dir_name = "\\errorlog"
     error_log_track_name = "\\track.txt"
     cw = os.getcwd()
+    cw_temp = cw.__str__()
+    cw_str = cw_temp.replace("\\dist\\wo_handler", "")
 
     # create strings for both paths.
-    error_log_dir = cw.__str__() + error_log_dir_name
+    error_log_dir = cw_str + error_log_dir_name
     error_log_track = error_log_dir + error_log_track_name
     # if file exists, get current iteration and update for next iteration.
     with open(error_log_track, 'r') as f:
         track_str = f.read()
 
     return error_log_dir, track_str
+
+
+def get_dir():
+    # set up directory path and file path.
+    cw = os.getcwd()
+    cw_temp = cw.__str__()
+    cw_str = cw_temp.replace("\\dist\\wo_handler", "")
+    return cw_str
 
 
 def click_element(driver, xpath, msg):
@@ -133,12 +145,13 @@ def click_element(driver, xpath, msg):
         pass
     try:
         el = driver.find_element_by_xpath(xpath)
+        try:
+            el.click()
+        except ElementClickInterceptedException:
+            debugger_print("ElementClickInterceptedException exception was called.")
+            pass
     except NoSuchElementException:
         debugger_print("Element Not Found: Could not click element.")
-    try:
-        el.click()
-    except ElementClickInterceptedException:
-        pass
     return
 
 
@@ -153,16 +166,14 @@ def select_option(driver, xpath, opt, msg):
         pass
     try:
         el = driver.find_element_by_xpath(xpath)
+        all_options = el.find_elements_by_tag_name("option")
+        for option in all_options:
+            option_text = option.text
+            if option_text is not None and opt in option_text:
+                option.click()
+                return
     except NoSuchElementException:
         debugger_print("Element Not Found: Could not find options element.")
-
-    all_options = el.find_elements_by_tag_name("option")
-    for option in all_options:
-        option_text = option.text
-        if option_text is not None and opt in option_text:
-            option.click()
-            return
-            break
 
     return
 
@@ -175,8 +186,6 @@ def select_option_el(el, opt, msg):
         if option_text is not None and opt in option_text:
             option.click()
             return
-            break
-
     return
 
 

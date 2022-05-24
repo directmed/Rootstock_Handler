@@ -1,23 +1,24 @@
 import urllib.request
 import os
 
-cwd = os.getcwd()
-cwd_str = cwd.__str__()
-
 
 class Updater:
     # initiate Updater and read csv file
     def __init__(self):
+        cwd = os.getcwd()
+        cwd_temp = cwd.__str__()
+        self.cwd_str = cwd_temp.replace("\\dist\\wo_handler", "")
+
         self.updater_headers = ['revision', 'raw', 'file_name']
         self.updater_sections = {}
-        self.csv_sections = {}
+        self.csv_sections = {'revision': ''}
 
     def start_updater(self):
         from sources.debugger_print import debugger_print_updater
         import pandas as pd
 
         try:
-            csv_data = pd.read_csv('updater.csv')  # read csv file
+            csv_data = pd.read_csv(self.cwd_str + '\\updater.csv')  # read csv file
             if csv_data.empty:  # check if csv file is empty
                 debugger_print_updater('CSV file is empty.')  # print out message on status box
                 data_flag = False  # set flag false
@@ -55,7 +56,7 @@ class Updater:
         url_filenames = self.csv_sections['file_name'].copy()
         for name_index, name in enumerate(url_filenames):
             debugger_print_updater("file_name[" + name_index.__str__() + "] = " + name)
-            python_files.append(cwd_str + name)
+            python_files.append(self.cwd_str + name)
             debugger_print_updater("internal_memory_location[" + name_index.__str__() + "] = " + python_files[name_index].__str__())
 
         for file_index in range(0, len(raw_urls)):
