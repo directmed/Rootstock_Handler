@@ -61,146 +61,172 @@ def run_wo_maker(main_gui):
 
     try:
         try:
+            # set up directory and file name for logging information
             error_log_dir, track_str = get_files_dir()
-
             error_log_unit_name = "\\unit.txt"
             error_log_unit = error_log_dir + error_log_unit_name
 
-            main_gui.get_gui_entries()
+            # check if 'Customer Property' is checked.
+            cancel_flag = False
+            if main_gui.get_unit_info_check_box_vars('Customer Property') is False:
+                prompt = messagebox.askyesno(title="Customer Property", message="Is this unit customer property?")
 
-            item = main_gui.get_unit_info_entry_box_text_vars('Part Number')
-            serial = main_gui.get_unit_info_entry_box_text_vars('Serial Number')
-            unit_str = item + '_' + serial
+                if prompt is True:
+                    cancel_flag = True
+                    debugger_print("Pop-up: customer property checkbox needs to be checked.")
+                    messagebox.showinfo(title="Customer Property", message="Please check the 'Customer Property' checkbox and select the correct location if applicable.")
+                elif prompt is False:
+                    debugger_print("Pop-up: unit is not customer property")
 
-            # check if 'track' file exists.
-            track_exists = os.path.exists(error_log_unit)
-            if not track_exists:
-                with open(error_log_unit, 'x') as f:
-                    f.write(unit_str.__str__())
-            # if file exists, get current iteration and update for next iteration.
-            else:
-                with open(error_log_unit, 'w') as f:
-                    f.write(unit_str.__str__())
+            if cancel_flag is False:
+                main_gui.get_gui_entries()  # prints user input to log file or console.
+                # get the unit information to use for the file name
+                item = main_gui.get_unit_info_entry_box_text_vars('Part Number')
+                serial = main_gui.get_unit_info_entry_box_text_vars('Serial Number')
+                unit_str = item + '_' + serial
 
-            wo_page_flag = False
-            # set up xpaths from csv file
-            main_xpaths = Xpaths()
-            main_xpaths.get_xpaths()
-            # main_xpaths.print_all()
-            # google chromedriver.exe auto installer
-            cdai = chromedriver_autoinstaller.install(True)
+                # check if 'track' file exists.
+                track_exists = os.path.exists(error_log_unit)
+                if not track_exists:
+                    with open(error_log_unit, 'x') as f:
+                        f.write(unit_str.__str__())
+                # if file exists, get current iteration and update for next iteration.
+                else:
+                    with open(error_log_unit, 'w') as f:
+                        f.write(unit_str.__str__())
 
-            # Load cookies created in start_up.py: If user cannot log in, run start_up.py
-            cookie_dir = os.path.abspath("chrome-data")
-            cookie_dir_text = str(cookie_dir)
-            chrome_options = Options()
-            chrome_options.add_argument("--user-data-dir=" + cookie_dir_text)
-            main_driver = webdriver.Chrome(cdai, options=chrome_options)
+                wo_page_flag = False
+                # set up xpaths from csv file
+                main_xpaths = Xpaths()
+                main_xpaths.get_xpaths()
+                # main_xpaths.print_all()
 
-            if main_gui.get_perform_tasks_check_box_values('Location Transfer') is False \
-                    and main_gui.get_perform_tasks_check_box_values('Create and Assign WO') is False \
-                    and main_gui.get_perform_tasks_check_box_values('DM Repair Information') is False \
-                    and main_gui.get_perform_tasks_check_box_values('Add Standard Operations and Booking') is False \
-                    and main_gui.get_perform_tasks_check_box_values('WO Receipt') is False:
-                main_driver.implicitly_wait(150)
+                # google chromedriver.exe auto installer
+                cdai = chromedriver_autoinstaller.install(True)
+                # Load cookies created in start_up.py: If user cannot log in, run start_up.py
+                cookie_dir = os.path.abspath("chrome-data")
+                cookie_dir_text = str(cookie_dir)
+                chrome_options = Options()
+                chrome_options.add_argument("--user-data-dir=" + cookie_dir_text)
+                main_driver = webdriver.Chrome(cdai, options=chrome_options)
 
-            # Log-in to Salesforce
-            login_init(main_driver, main_xpaths, main_gui)
-            # get the item info
-            get_item_info(main_driver, main_xpaths, main_gui)
+                # If all checkboxes are unchecked, user is setting up browser cookies. Increase waiting time.
+                if main_gui.get_perform_tasks_check_box_values('Location Transfer') is False \
+                        and main_gui.get_perform_tasks_check_box_values('Create and Assign WO') is False \
+                        and main_gui.get_perform_tasks_check_box_values('DM Repair Information') is False \
+                        and main_gui.get_perform_tasks_check_box_values('Add Standard Operations and Booking') is False \
+                        and main_gui.get_perform_tasks_check_box_values('WO Receipt') is False:
+                    main_driver.implicitly_wait(150)
 
-            # CHECK IF THE COIL IS CUSTOMER PROPERTY
-            # set variables for Location to Location function.
-            ret_list = set_previous_location()
-            debugger_print("ret_list = " + ret_list.__str__())
-            original_location['id'] = ret_list[0]
-            original_location['key'] = ret_list[1]
-            original_location['no'] = set_inventory_location()
+                # Log-in to Salesforce
+                login_init(main_driver, main_xpaths, main_gui)
+                # get the item info
+                get_item_info(main_driver, main_xpaths, main_gui)
 
-            if main_gui.get_perform_tasks_check_box_values('Location Transfer') is True:
-                # Override location if flag is True
-                loc_to_loc_transfer(main_driver, main_xpaths, main_gui)
+                # CHECK IF THE COIL IS CUSTOMER PROPERTY
+                # set variables for Location to Location function.
+                ret_list = set_previous_location()
+                debugger_print("ret_list = " + ret_list.__str__())
+                original_location['id'] = ret_list[0]
+                original_location['key'] = ret_list[1]
+                original_location['no'] = set_inventory_location()
 
-            """Initialize the Work Order and Enter the relevant data """
-            # check if there is a pre-existing WO and prompt the user if they would like to user that WO instead.
-            if main_gui.get_perform_tasks_check_box_values('Create and Assign WO') is True:
+                if main_gui.get_perform_tasks_check_box_values('Location Transfer') is True:
+                    # Override location if flag is True
+                    loc_to_loc_transfer(main_driver, main_xpaths, main_gui)
 
-                # check if there is a work order associated with this item
-                if item_info[7] is not None and "WO" in item_info[7]:
-                    # if a WO is found, prompt the user if they would like to open it.
-                    wo_data['number'] = item_info[7].replace("WO-", "")
-                    new_wo_flag = get_wo_page(main_driver, main_xpaths)
-                    if new_wo_flag is True:
-                        # Previous WO found has been completed. Open a new WO.
+                """Initialize the Work Order and Enter the relevant data """
+                # check if there is a pre-existing WO and prompt the user if they would like to user that WO instead.
+                if main_gui.get_perform_tasks_check_box_values('Create and Assign WO') is True:
+
+                    # check if there is a work order associated with this item
+                    if item_info[7] is not None and "WO" in item_info[7]:
+                        # if a WO is found, prompt the user if they would like to open it.
+                        wo_data['number'] = item_info[7].replace("WO-", "")
+                        new_wo_flag = get_wo_page(main_driver, main_xpaths)
+                        if new_wo_flag is True:
+                            # Previous WO found has been completed. Open a new WO.
+                            debugger_print("No Previous WO has been created.")
+                            wo_data['number'] = work_order_init(main_driver, main_xpaths, main_gui)
+                            wo_data['number'] = wo_data['number'].replace("WO-", "")
+                            wo_page_flag = True
+                    else:
+                        # No WO has been found. A new WO will be created.
                         debugger_print("No Previous WO has been created.")
                         wo_data['number'] = work_order_init(main_driver, main_xpaths, main_gui)
                         wo_data['number'] = wo_data['number'].replace("WO-", "")
-                        wo_page_flag = True
-                else:
-                    # No WO has been found. A new WO will be created.
-                    debugger_print("No Previous WO has been created.")
-                    wo_data['number'] = work_order_init(main_driver, main_xpaths, main_gui)
+
+                        if test_flag is False:
+                            # Generate the PickList
+                            debugger_print("Generating Pick List")
+                            wo_data['number'] = generate_picklist(main_driver, main_xpaths)
+                            wo_data['number'] = wo_data['number'].replace("WO-", "")
+                            wo_page_flag = True
+
+                        # Issue the work order to the correct serial number
+                        debugger_print("Issuing WO to given Serial Number.")
+                        wo_issue(main_driver, main_xpaths, main_gui)
+
+                elif main_gui.get_unit_info_check_box_vars('Use Previous WO') is True:
+                    wo_data['number'] = main_gui.get_unit_info_entry_box_text_vars('Previous WO Number')
                     wo_data['number'] = wo_data['number'].replace("WO-", "")
+                    open_wo_page(main_driver, main_xpaths, main_gui)
+                    wo_page_flag = True
+                elif main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
+                        or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
+                        or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
+                        or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
+                        or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True:
+                    wo_data['number'] = item_info[7].__str__()
+                    debugger_print("run_wo_maker: wo_data['number'] = " + wo_data['number'])
+                    get_wo_page(main_driver, main_xpaths)
+                    wo_page_flag = True
 
-                    if test_flag is False:
-                        # Generate the PickList
-                        debugger_print("Generating Pick List")
-                        wo_data['number'] = generate_picklist(main_driver, main_xpaths)
-                        wo_data['number'] = wo_data['number'].replace("WO-", "")
-                        wo_page_flag = True
+                if test_flag is False and wo_page_flag is True:
+                    # Add DM Repair Info, wo required
+                    if main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True:
+                        dm_repair_info(main_driver, main_xpaths, main_gui)
 
-                    # Issue the work order to the correct serial number
-                    debugger_print("Issuing WO to given Serial Number.")
-                    wo_issue(main_driver, main_xpaths, main_gui)
+                    # Add standard Operations, wo required
+                    if main_gui.get_perform_tasks_check_box_values('Add Standard Operations and Booking') is True:
+                        add_std_operation(main_driver, main_xpaths, main_gui)
+                    # Perform the TQ Booking, wo required
+                    # if main_gui.get_perform_tasks_check_box_values('Add Booking') is True:
+                        tq_booking(main_driver, main_xpaths, main_gui)
 
-            elif main_gui.get_unit_info_check_box_vars('Use Previous WO') is True:
-                wo_data['number'] = main_gui.get_unit_info_entry_box_text_vars('Previous WO Number')
-                wo_data['number'] = wo_data['number'].replace("WO-", "")
-                open_wo_page(main_driver, main_xpaths, main_gui)
-                wo_page_flag = True
-            elif main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
-                    or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
-                    or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
-                    or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True \
-                    or main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True:
-                wo_data['number'] = item_info[7].__str__()
-                debugger_print("run_wo_maker: wo_data['number'] = " + wo_data['number'])
-                get_wo_page(main_driver, main_xpaths)
-                wo_page_flag = True
+                    # Perform WO Receipt and change final loaction.
+                    if main_gui.get_perform_tasks_check_box_values('WO Receipt') is True:
+                        wo_receipt(main_driver, main_xpaths, main_gui)
 
-            if test_flag is False and wo_page_flag is True:
-                # Add DM Repair Info, wo required
-                if main_gui.get_perform_tasks_check_box_values('DM Repair Information') is True:
-                    dm_repair_info(main_driver, main_xpaths, main_gui)
+                    # close WO
+                    """
+                    if main_gui.get_perform_tasks_check_box_values('Close WO') is True:
+                        wo_data['status'] = check_wo_page_status(main_driver, main_xpaths)
+                        if wo_data['status'] is not None and wo_data['status'] == "8":
+                            close_wo(main_driver, main_xpaths)
+                    """
+                elif wo_page_flag is False:
+                    debugger_print("WO page is not open")
 
-                # Add standard Operations, wo required
-                if main_gui.get_perform_tasks_check_box_values('Add Standard Operations and Booking') is True:
-                    add_std_operation(main_driver, main_xpaths, main_gui)
-                # Perform the TQ Booking, wo required
-                # if main_gui.get_perform_tasks_check_box_values('Add Booking') is True:
-                    tq_booking(main_driver, main_xpaths, main_gui)
-
-                # Perform WO Receipt and change final loaction.
-                if main_gui.get_perform_tasks_check_box_values('WO Receipt') is True:
-                    wo_receipt(main_driver, main_xpaths, main_gui)
-
-                # close WO
-                """
-                if main_gui.get_perform_tasks_check_box_values('Close WO') is True:
-                    wo_data['status'] = check_wo_page_status(main_driver, main_xpaths)
-                    if wo_data['status'] is not None and wo_data['status'] == "8":
-                        close_wo(main_driver, main_xpaths)
-                """
-            elif wo_page_flag is False:
-                debugger_print("WO page is not open")
-
-            main_driver.close()
+                try:
+                    main_driver.close()
+                    box_message = "Your Work Order is: WO-" + wo_data['number'].__str__()
+                    messagebox.showinfo(title="Run is Complete", message=box_message)
+                    main_gui.set_unit_info_entry_box_text_vars('Previous WO Number', wo_data['number'].__str__())
+                except Exception as e:
+                    debugger_print("No browser was open.")
+                    debugger_print(traceback.format_exc())
         except NoSuchWindowException:
             debugger_print("Browser was closed manually.")
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        try:
+            main_driver.close()
+        except Exception as e:
+            debugger_print("No browser was open.")
+            debugger_print(traceback.format_exc())
 
 
 if __name__ == "__main__":

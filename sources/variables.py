@@ -115,9 +115,10 @@ class Xpaths:
                 self.xpath_sections[header] = xpath_sections_temp.copy()
 
     def load_xpaths_github(self):
-        from sources.debugger_print import debugger_print
+        from sources.debugger_print import debugger_print, get_dir
         data_flag = False  # true if csv file is found in github
 
+        this_dir = get_dir()
         xpath_headers = ['login_init', 'get_item_info', 'get_wo_page', 'check_wo_page_status', 'open_wo_page',
                          'loc_to_loc_transfer', 'work_order_init', 'generate_picklist', 'wo_issue', 'dm_repair_info',
                          'add_std_operation', 'tq_booking', 'wo_receipt', 'close_wo', 'tq_rows']
@@ -155,7 +156,7 @@ class Xpaths:
                 xpath_sections_data[index1].append(val2)
 
         df = pd.DataFrame(xpath_sections_data, index=xpath_headers).transpose()
-        df.to_csv('xpaths.csv', index=False)  # save CSV file
+        df.to_csv(this_dir + '\\xpaths.csv', index=False)  # save CSV file
 
     def get_xpath(self, key, xpath_index):
         return self.xpath_sections[key][xpath_index]

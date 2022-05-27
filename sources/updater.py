@@ -19,6 +19,7 @@ class Updater:
 
         try:
             csv_data = pd.read_csv(self.cwd_str + '\\updater.csv')  # read csv file
+            # csv_data = pd.read_csv(self.cwd_str + '\\updater_temp.csv')  # read csv file
             if csv_data.empty:  # check if csv file is empty
                 debugger_print_updater('CSV file is empty.')  # print out message on status box
                 data_flag = False  # set flag false
@@ -74,6 +75,7 @@ class Updater:
 
         # github url where default csv file is found.
         updater_url = 'https://raw.githubusercontent.com/directmed/Rootstock_Handler/main/updater.csv'
+        # updater_url = 'https://raw.githubusercontent.com/directmed/Rootstock_Handler/main/updater_temp.csv'
         updater_data = pd.read_csv(updater_url)  # read csv file
         if updater_data.empty:  # check if csv file is empty
             # update_status_box('Github CSV file is empty.')
@@ -113,7 +115,8 @@ class Updater:
                     updater_sections_data[index1].append(val2)
 
             df = pd.DataFrame(updater_sections_data, index=self.updater_headers).transpose()
-            df.to_csv('updater.csv', index=False)  # save CSV file
+            df.to_csv(self.cwd_str + '\\updater.csv', index=False)  # save CSV file
+            # df.to_csv(self.cwd_str + '\\updater_temp.csv', index=False)  # save CSV file
             debugger_print_updater("Files have been updated.")
             return True
         else:

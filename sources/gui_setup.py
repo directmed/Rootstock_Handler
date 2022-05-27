@@ -827,11 +827,12 @@ class GuiSetup:
     def load_locations_github(self):
         import os
         from sources.variables import location_info_id_options, location_info_no_options_by_id
-        from sources.debugger_print import debugger_print_gui_setup
+        from sources.debugger_print import debugger_print_gui_setup, get_dir
         data_flag = False  # true if csv file is found in github
 
-        if os.path.exists('locations.csv'):
-            os.remove('locations.csv')
+        this_dir = get_dir()
+        if os.path.exists(this_dir + '\\locations.csv'):
+            os.remove(this_dir + '\\locations.csv')
         else:
             debugger_print_gui_setup("The file does not exist")
 
@@ -893,7 +894,7 @@ class GuiSetup:
                 locations_data[key_index + 1].append(data)
 
         df = pd.DataFrame(locations_data, index=locations_header).transpose()
-        df.to_csv('locations.csv', index=False)  # save CSV file
+        df.to_csv(this_dir + '\\locations.csv', index=False)  # save CSV file
 
     # Function saves all user data to csv file in ROG folder.
     def save_user_data(self):
@@ -982,8 +983,14 @@ class GuiSetup:
     def get_unit_info_entry_box_text_vars(self, name):
         return self.unit_info_entry_box_text_vars[name].get().__str__()
 
+    def set_unit_info_entry_box_text_vars(self, name, val):
+        self.unit_info_entry_box_text_vars[name].set(val)
+
     def get_unit_info_check_box_vars(self, name):
         return self.unit_info_check_box_vars[name].get()
+
+    def set_unit_info_check_box_vars(self, name, val):
+        self.unit_info_check_box_vars[name].set(val)
 
     def get_location_info_final_id_combo_box(self, name):
         return self.location_info_final_id_combo_box[name].get().__str__()
@@ -1020,7 +1027,7 @@ class GuiSetup:
 
     def get_gui_entries(self):
         from sources.debugger_print import debugger_print
-
+        debugger_print("\n\n-------------------------------------- New Session --------------------------------------")
         debugger_print("********** User has entered the following information **********")
         debugger_print("\n**** PERFORM TASKS ****")
         for name in self.perform_tasks_check_box_names:
