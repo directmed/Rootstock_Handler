@@ -21,7 +21,6 @@ def dm_repair_info(driver, xpaths, gui):
             click_element(driver, elem_xpath, "Clicking the DM tab")
 
             # DM tab information
-            # claim input xpath = "/html/body/div[1]/div[2]/table/tbody/tr/td[2]/span[3]/form/div[1]/div/div/div/div[2]/table/tbody/tr[2]/td[11]/table/tbody/tr/td/span/span/div/div/table/tbody/tr[6]/td[1]/span/input"
             elem_xpath_names = ['OEM Number', 'Initial Condition', 'Customer Complaint', 'Initial Failure',
                                 'Internal Repair', 'External Repair', 'Tested On Bench', 'Tested On Live MRI',
                                 'Testing Notes', 'Repair Is Finalized']
@@ -95,13 +94,15 @@ def dm_repair_info(driver, xpaths, gui):
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print("\n******** DM Repair Info Complete ********\n")
-    return
+    return False
 
 
 if __name__ == "__main__":

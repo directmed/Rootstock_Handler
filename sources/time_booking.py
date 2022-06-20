@@ -31,7 +31,7 @@ def tq_booking(driver, xpaths, gui):
             elem = find_element(driver, elem_xpath, debug_message)
             if elem is False:
                 debugger_print("Could not find element. Stop 1")
-                return
+                return True
 
             op_count = elem.find_elements_by_tag_name("tr")
             debugger_print(op_count)
@@ -79,7 +79,7 @@ def tq_booking(driver, xpaths, gui):
                 elem = find_element(driver, elem_xpath, debug_message)  # check this xpath
                 if elem is False:
                     debugger_print("Could not find element. Stop 2")
-                    return
+                    return True
 
                 try:
                     wait = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "li")))
@@ -117,7 +117,7 @@ def tq_booking(driver, xpaths, gui):
                 elem = find_element(driver, del_button_xpath, debug_message)
                 if elem is False:
                     debugger_print("Could not find element. Stop 3")
-                    return
+                    return True
 
                 # Find body for booking options
                 # loop through each booking entry
@@ -129,7 +129,7 @@ def tq_booking(driver, xpaths, gui):
                     elem_span = find_element(driver, elem_xpath, "Finding booking options row")
                     if elem_span is False:
                         debugger_print("could not find booking row option. Stop 4")
-                        return
+                        return True
 
                     elem_data_cells = elem_span.find_elements_by_class_name("dataCell")
                     # Fill out booking entry
@@ -176,16 +176,19 @@ def tq_booking(driver, xpaths, gui):
 
             except NoSuchWindowException:
                 debugger_print("window was closed manually")
+                return True
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
-
-        debugger_print("\n******** TQ BOOKING COMPLETED ********\n")
+            return True
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
-    return
+        return True
+
+    debugger_print("\n******** TQ BOOKING COMPLETED ********\n")
+    return False
 
 
 if __name__ == "__main__":

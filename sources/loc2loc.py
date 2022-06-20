@@ -21,7 +21,7 @@ def loc_to_loc_transfer(driver, xpaths, gui):
             debugger_print("xpath[" + section_index.__str__() + "] = " + elem_xpath)
             if elem is False:
                 debugger_print("Could not find element. Stop 1.")
-                return
+                return True
 
             all_options = elem.find_elements_by_tag_name("option")
             for option in all_options:
@@ -64,7 +64,7 @@ def loc_to_loc_transfer(driver, xpaths, gui):
             debugger_print("xpath[" + section_index.__str__() + "] = " + elem_xpath)
             if elem is False:
                 debugger_print("Could not find element. Stop 2.")
-                return
+                return True
 
             all_options = elem.find_elements_by_tag_name("option")
             # setup xpaths for loops
@@ -122,6 +122,7 @@ def loc_to_loc_transfer(driver, xpaths, gui):
 
             except NoSuchElementException:
                 debugger_print("Could not find the Serial Number in Locations.")
+                return True
 
             # Click the DISPLAY LOC MOVE ENTRIES button and click it
             debug_message = "Clicked DISPLAY LOC MOVE ENTRIES."
@@ -143,14 +144,14 @@ def loc_to_loc_transfer(driver, xpaths, gui):
             elem = find_element(driver, elem_xpath, debug_message)
             if elem is False:
                 debugger_print("Could not find element")
-                return
+                return True
 
             debugger_print("xpath[" + section_index.__str__() + "] = " + elem_xpath)
             try:
                 new_loc_rows = elem.find_elements_by_tag_name("tr")
             except NoSuchElementException:
                 debugger_print("Could not find rows or columns on new location table.")
-                return
+                return True
 
             indx = 0
             debugger_print(new_loc_rows)
@@ -195,13 +196,15 @@ def loc_to_loc_transfer(driver, xpaths, gui):
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print("\n******** Location Transfer Complete ********\n")
-    return
+    return False
 
 
 if __name__ == "__main__":

@@ -24,9 +24,7 @@ def get_item_info(driver, xpaths, gui):
                 debugger_print('Searching for the serial number...')
             except NoSuchElementException:
                 debugger_print('Error: Search box not found.')
-                # update_status_box('Error:   Search box not found.')
-                # driver.close()
-                # return
+                return True
 
             # Find information for
             exit_flag = 0
@@ -78,17 +76,18 @@ def get_item_info(driver, xpaths, gui):
 
             except NoSuchElementException:
                 debugger_print('Error: No Item Number found for this DPS.')
-                # update_status_box('Error: No Item Number found for this DPS.')
-                # driver.close()
+                return True
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
 
     except Exception as e:
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print("\n******** Item Info Stored ********\n")
-    return
+    return False
 
 
 def get_wo_page(driver, xpaths):
@@ -112,9 +111,7 @@ def get_wo_page(driver, xpaths):
                 debugger_print('\nSearching for the WO NUMBER...')
             except NoSuchElementException:
                 debugger_print('\nError: Search box not found.')
-                # update_status_box('Error:   Search box not found.')
-                driver.close()
-                # return
+                return True, False
 
             # Find information for rs_item_info[]
             exit_flag = 0
@@ -151,12 +148,12 @@ def get_wo_page(driver, xpaths):
                             if data[9].text is not None and "9" in data[9].text:
                                 debugger_print("New work order will be made")
                                 wo_data['status'] = "0"
-                                return True
+                                return False, True
 
                             elif data[9].text is not None and "7" in data[9].text:
                                 debugger_print("New work order will be made")
                                 wo_data['status'] = "0"
-                                return True
+                                return False, True
 
                             else:
                                 debugger_print("Found existing work order.")
@@ -169,6 +166,7 @@ def get_wo_page(driver, xpaths):
 
             except NoSuchElementException:
                 debugger_print('Error: No WO found for this DPS.')
+                return True, False
                 # update_status_box('Error: No Item Number found for this DPS.')
                 # driver.close()
 
@@ -178,13 +176,15 @@ def get_wo_page(driver, xpaths):
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True, False
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True, False
 
     debugger_print("\n******** Existing WO is open ********\n")
-    return False
+    return False, False
 
 
 def check_wo_page_status(driver, xpaths):
@@ -203,7 +203,6 @@ def check_wo_page_status(driver, xpaths):
         if el_text is not None and number in el_text:
             debugger_print("\n******** Status Number = " + number)
             return number
-            break
 
     return None
 
@@ -226,17 +225,15 @@ def open_wo_page(driver, xpaths, gui):
                 elem = find_element(driver, elem_xpath, '\nSearching for the WO NUMBER...')
                 if elem is False:
                     debugger_print("could not find element. stop 1.")
-                    return
+                    return True
 
                 elem.clear()
                 elem.send_keys(text_to_input)
                 elem.send_keys(Keys.ENTER)
             except NoSuchElementException:
                 debugger_print('\nError: Search box not found.')
-                # update_status_box('Error:   Search box not found.')
-                driver.close()
-                # return
-                # Find information for rs_item_info[]
+                return True
+
             exit_flag = 0
             try:
                 header_wanted = "Work Orders"
@@ -261,22 +258,17 @@ def open_wo_page(driver, xpaths, gui):
                         if header_text is not None and header_wanted in header_text:
                             datacells = list_ele.find_element_by_class_name("pbBody")
                             data = datacells.find_elements_by_class_name("dataCell")
-                            '''
-                            print("Sorting through cells\n")
-                            for indication, datum in enumerate(data):
-                                print(indication)
-                                print(datum.text)
-                            '''
+
                             # Work order is closed and a new work order needs to be placed
                             if data[9].text is not None and "9" in data[9].text:
                                 debugger_print("New work order will be made")
                                 wo_data['status'] = "0"
-                                return
+                                return True
 
                             elif data[9].text is not None and "7" in data[9].text:
                                 debugger_print("New work order will be made")
                                 wo_data['status'] = "0"
-                                return
+                                return True
 
                             else:
                                 debugger_print("Found existing work order.")
@@ -289,6 +281,7 @@ def open_wo_page(driver, xpaths, gui):
 
             except NoSuchElementException:
                 debugger_print('Error: No WO found for this DPS.')
+                return True
                 # update_status_box('Error: No Item Number found for this DPS.')
                 # driver.close()
 
@@ -298,13 +291,15 @@ def open_wo_page(driver, xpaths, gui):
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print("\n******** Existing WO is open ********\n")
-    return
+    return False
 
 
 if __name__ == "__main__":

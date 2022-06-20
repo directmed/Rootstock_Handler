@@ -87,15 +87,18 @@ def login_init(driver, xpaths, gui):
             elem = find_element(driver, elem_xpath, debug_message)
             if elem is False:
                 debugger_print("searchbar was not found. Something went wrong.")
+                return True
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print('\n******** Logged in successfully. ********\n')
-    return
+    return False
 
 
 if __name__ == "__main__":

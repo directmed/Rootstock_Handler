@@ -58,12 +58,15 @@ def wo_receipt(driver, xpaths, gui):
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
+
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print("\n******** WO RECEIPT COMPLETED ********\n")
-    return
+    return False
 
 
 if __name__ == "__main__":

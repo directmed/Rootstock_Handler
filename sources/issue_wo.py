@@ -49,14 +49,14 @@ def wo_issue(driver, xpaths, gui):
             elem = find_element(driver, elem_xpath, debug_message)
             if elem is False:
                 debugger_print("could not find element. stop 2.")
-                return
+                return True
 
             try:
                 # populate the rows that may contain the serial number
                 new_loc_rows = elem.find_elements_by_tag_name("tr")
             except NoSuchElementException:
                 debugger_print("Could not find rows or columns on the components table.")
-                return
+                return True
 
             debugger_print(new_loc_rows)
             indx = 0
@@ -123,13 +123,15 @@ def wo_issue(driver, xpaths, gui):
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print("\n******** WO ISSUE COCMPLETED ********\n")
-    return
+    return False
 
 
 if __name__ == "__main__":

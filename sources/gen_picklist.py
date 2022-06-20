@@ -39,13 +39,15 @@ def generate_picklist(driver, xpaths):
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True, None
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True, None
 
     debugger_print("\n******** Picklist Complete ********\n")
-    return wo_num
+    return False, wo_num
 
 
 if __name__ == "__main__":

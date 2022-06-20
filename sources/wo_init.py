@@ -32,6 +32,7 @@ def work_order_init(driver, xpaths, gui):
                 elem.send_keys(temp)
             else:
                 debugger_print("Check xpath: stop 1")
+                return True, None
 
             # Select option from automatic menu
             debug_message = "Selecting Part Number"
@@ -82,16 +83,18 @@ def work_order_init(driver, xpaths, gui):
                 wo_num = elem.text
                 debugger_print("WO Number is " + wo_num)
                 debugger_print("\n******** Work Order Init Complete ********\n")
-                return wo_num
+                return False, wo_num
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True, None
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True, None
 
-    return None
+    return True, None
 
 
 if __name__ == "__main__":

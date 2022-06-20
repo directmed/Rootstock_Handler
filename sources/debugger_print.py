@@ -76,7 +76,8 @@ def setup_files():
     error_log_track_name = "\\track.txt"
     cw = os.getcwd()
     cw_temp = cw.__str__()
-    cw_str = cw_temp.replace("\\dist\\wo_handler", "")
+    cw_str = cw_temp
+    # cw_str = cw_temp.replace("\\dist\\wo_handler", "")
 
     # create strings for both paths.
     error_log_dir = cw_str + error_log_dir_name
@@ -114,7 +115,8 @@ def get_files_dir():
     error_log_track_name = "\\track.txt"
     cw = os.getcwd()
     cw_temp = cw.__str__()
-    cw_str = cw_temp.replace("\\dist\\wo_handler", "")
+    # cw_str = cw_temp.replace("\\dist\\wo_handler", "")
+    cw_str = cw_temp
 
     # create strings for both paths.
     error_log_dir = cw_str + error_log_dir_name

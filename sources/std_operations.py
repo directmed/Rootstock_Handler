@@ -112,16 +112,19 @@ def add_std_operation(driver, xpaths, gui):
                     click_element(driver, elem_xpath, debug_message)
             else:
                 debugger_print("No operations have been entered")
+                return True
 
         except NoSuchWindowException:
             debugger_print("window was closed manually")
+            return True
 
     except Exception as e:
         debugger_print("\n\n\n********** Exception Called **********")
         debugger_print(traceback.format_exc())
+        return True
 
     debugger_print("\n******** Standard Operation complete ********\n")
-    return
+    return False
 
 
 if __name__ == "__main__":
